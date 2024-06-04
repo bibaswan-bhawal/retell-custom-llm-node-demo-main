@@ -42,17 +42,13 @@ export class CallingAgent {
       );
 
       for await (const run of current_runs) {
-        if (
-          run.status != "cancelled" &&
-          run.status != "cancelling" &&
-          run.status != "completed" &&
-          run.status != "failed" &&
-          run.status != "expired"
-        ) {
-          await this.client.beta.threads.runs.cancel(this.thread.id, run.id);
-        }
+        await this.client.beta.threads.runs.cancel(this.thread.id, run.id);
       }
+    } catch (err) {
+      console.error("Error in cancelling run: ");
+    }
 
+    try {
       if (request.interaction_type == "reminder_required") {
         await this.client.beta.threads.messages.create(this.thread.id, {
           role: "user",
@@ -66,7 +62,7 @@ export class CallingAgent {
         });
       }
     } catch (err) {
-      console.error("Error in cancelling run: ");
+      console.error("Error in adding to thread run: ");
     }
   }
 
